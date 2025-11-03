@@ -1,0 +1,38 @@
+ Relatorio do Projeto Horta Comunitaria Verde Viva
+
+-Introdução
+
+O sistema de banco de dados Horta Verde Viva foi desenvolvido para organizar e acompanhar o funcionamento de uma horta comunitária , controlando:
+
+o trabalho dos voluntários ,
+o uso dos canteiros ,
+o cultivo das espécies de plantas
+o registro das colheitas ,
+e o destino das ações realizadas para parcerias.
+O banco segue um modelo relacional normalizado , garantindo integridade entre as entidades principais: Voluntario, Canteiro, Especie_de_Planta, Cultivo, Colheita, Doação e Instituição.
+
+-Resumo das Entidades
+
+Voluntário: Armazena dados pessoais e de contato dos participantes da horta.                                           
+Canteiro: Representa os espaços físicos onde ocorrem os cultivos, com informações sobre localização, solo e tamanho. 
+Especie_planta: Contém as espécies cultivadas, com nome popular, nome científico e características de ciclo de vida.       
+Instituição: Cadastra as entidades que recebem as doações, com dados de identificação e contato.                        
+Cultivo: Representa o plantio realizado por um voluntário em um determinado canteiro, associando uma espécie de planta. Resolve o relacionamento N:N entre Canteiro e Especie_planta.
+Colheita: Registra o resultado das plantações, vinculando-se a um canteiro e, opcionalmente, ao cultivo que a originou.                                                                    |
+Doação: Armazena as informações sobre as doações derivadas de uma colheita específica.                                                                                                   |
+Doação_instituição: Tabela associativa que resolve o N:N entre Doação e Instituição, permitindo detalhar a quantidade e a data de entrega a cada instituição.                                    |
+
+-Principais Consultas e Seus Propósitos
+
+Consulta SQL	Propósito
+SELECT * FROM Voluntario;	Lista todos os voluntários e suas funções cadastradas.
+SELECT ca.identificacao, e.nome_popular, cu.data_plantio FROM Cultivo cu ...	Mostra as plantas cultivadas em cada canteiro, com dados de plantio.
+SELECT v.nome, e.nome_popular FROM Voluntario v ...	Exibe quais voluntários cultivaram cada espécie.
+SELECT ca.identificacao, c.quantidade_colhida FROM Colheita c ...	Mostra todas as colheitas realizadas, com o canteiro e a quantidade colhida em kg.
+SELECT ... LEFT JOIN ... WHERE co.idColheita IS NULL;	Lista os canteiros que ainda não tiveram colheita .
+SELECT v.nome, COUNT(cu.idCultivo) ... ORDER BY ...	Mostra qual voluntário realizou o maior número de cultivos .
+SELECT e.nome_popular FROM Especie_de_Planta e ... WHERE co.idColheita IS NULL;	Identifique as espécies que ainda não foram colhidas .
+
+-Conclusão
+
+O banco de dados da Horta Verde Viva oferece uma base sólida para o gerenciamento sustentável da produção comunitária , permitindo acompanhar o ciclo completo, do planejamento à doação, e apoiar decisões sobre produtividade, voluntariado e impacto social.
