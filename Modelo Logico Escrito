@@ -1,0 +1,121 @@
+Modelo Lógico
+
+sql
+
+TABELA: VOLUNTARIO
+
+CREATE TABLE VOLUNTARIO (
+  id_voluntario INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(150) NOT NULL,
+  data_nascimento DATE,
+  telefone VARCHAR(30),
+  email VARCHAR(100),
+  cargo VARCHAR(60)
+);
+
+TABELA: CANTEIRO
+
+CREATE TABLE CANTEIRO (
+  id_canteiro INT AUTO_INCREMENT PRIMARY KEY,
+  localizacao VARCHAR(200),
+  tamanho_m2 DECIMAL(10,2),
+  tipo_solo VARCHAR(50),
+  situacao VARCHAR(50)
+);
+
+TABELA: ESPECIE_PLANTA
+
+CREATE TABLE ESPECIE_PLANTA (
+  id_especie INT AUTO_INCREMENT PRIMARY KEY,
+  nome_popular VARCHAR(150),
+  nome_cientifico VARCHAR(150),
+  ciclo_vida VARCHAR(50),
+  tempo_medio_colheita INT,
+  observacao TEXT
+);
+
+TABELA: CULTIVO
+(resolve o N:N entre Canteiro e Especie_planta e associa o Voluntario)
+
+CREATE TABLE CULTIVO (
+  id_cultivo INT AUTO_INCREMENT PRIMARY KEY,
+  data_plantio DATE NOT NULL,
+  quantidade_kg DECIMAL(10,3),
+  situacao VARCHAR(50),
+  id_voluntario INT NOT NULL,
+  id_canteiro INT NOT NULL,
+  id_especie INT NOT NULL,
+  FOREIGN KEY (id_voluntario) REFERENCES VOLUNTARIO(id_voluntario),
+  FOREIGN KEY (id_canteiro) REFERENCES CANTEIRO(id_canteiro),
+  FOREIGN KEY (id_especie) REFERENCES ESPECIE_PLANTA(id_especie)
+);
+
+TABELA: COLHEITA
+(cada colheita ocorre em 1 canteiro e pode estar ligada a 1 cultivo)
+
+CREATE TABLE COLHEITA (
+  id_colheita INT AUTO_INCREMENT PRIMARY KEY,
+  id_canteiro INT NOT NULL,
+  id_cultivo INT,
+  id_responsavel INT,
+  data_colheita DATE NOT NULL,
+  quantidade_colhida_kg DECIMAL(12,3),
+  FOREIGN KEY (id_canteiro) REFERENCES CANTEIRO(id_canteiro),
+  FOREIGN KEY (id_cultivo) REFERENCES CULTIVO(id_cultivo),
+  FOREIGN KEY (id_responsavel) REFERENCES VOLUNTARIO(id_voluntario)
+);
+
+
+TABELA: DOACAO
+(cada doação se origina de uma colheita específica)
+
+CREATE TABLE DOACAO (
+  id_doacao INT AUTO_INCREMENT PRIMARY KEY,
+  id_colheita INT NOT NULL,
+  data_doacao DATE NOT NULL,
+  quantidade_total_kg DECIMAL(12,3),
+  observacao TEXT,
+  FOREIGN KEY (id_colheita) REFERENCES COLHEITA(id_colheita)
+);
+
+
+TABELA: INSTITUICAO
+
+CREATE TABLE INSTITUICAO (
+  id_instituicao INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(200) NOT NULL,
+  tipo_instituicao VARCHAR(80),
+  cnpj VARCHAR(20),
+  email VARCHAR(100),
+  cidade VARCHAR(100),
+  bairro VARCHAR(100),
+  endereco VARCHAR(200),
+  contato VARCHAR(100)
+);
+
+
+TABELA ASSOCIATIVA: DOACAO_INSTITUICAO
+(resolve o N:N entre DOACAO e INSTITUICAO)
+
+CREATE TABLE DOACAO_INSTITUICAO (
+  id_doacao INT NOT NULL,
+  id_instituicao INT NOT NULL,
+  quantidade_recebida_kg DECIMAL(12,3) NOT NULL,
+  data_entrega DATE,
+  PRIMARY KEY (id_doacao, id_instituicao),
+  FOREIGN KEY (id_doacao) REFERENCES DOACAO(id_doacao),
+  FOREIGN KEY (id_instituicao) REFERENCES INSTITUICAO(id_instituicao)
+);
+```
+
+Relações resolvidas
+
+
+
+Voluntário - Cultivo     1:N          id_voluntario em Cultivo           
+Canteiro - Espécie       N:N          Tabela Cultivo                        
+Canteiro - Colheita      1:N          id_canteiro em Colheita             
+Cultivo - Colheita       1:N          id_cultivo em Colheita              
+Colheita - Doação        1:N          id_colheita em Doação            
+Doação - Instituição     N:N          Tabela associativa Doação-Instituição
+
