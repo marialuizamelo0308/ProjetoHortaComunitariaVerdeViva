@@ -1,0 +1,113 @@
+SELECT 
+idvoluntario AS 'id',
+nome AS 'nome do voluntario',
+funcao AS 'funcao'
+FROM voluntario;
+
+
+SELECT
+v.nome AS 'Voluntário',
+  ep.nome_popular AS 'Planta Cultivada'
+FROM Cultivo cu
+INNER JOIN Voluntario v ON cu.idVoluntario = v.idVoluntario
+INNER JOIN Especie_De_Planta ep ON cu.idEspecie = ep.idEspecie
+ORDER BY v.nome;
+
+
+SELECT
+E.nome_popular AS Especie,
+    CO.data_colheita AS Data_da_Colheita,
+    CO.quantidade_colhida AS 'Quantidade_Colhida (kg)'
+FROM
+    Colheita CO
+JOIN
+    Cultivo CU ON CO.idCultivo = CU.idCultivo
+JOIN
+    Canteiro C ON CU.idCanteiro = C.idCanteiro
+JOIN
+    Especie_De_Planta E ON CU.idEspecie = E.idEspecie
+ORDER BY
+    CO.data_colheita DESC;
+
+
+SELECT
+I.nome AS Instituicao,
+    SUM(D.quantidade_doada) AS 'Quantidade_Total_Doada (kg)'
+FROM
+    Doacao D
+JOIN
+    Instituicao I ON D.idInstituicao = I.idInstituicao
+GROUP BY
+    I.nome
+ORDER BY
+    'Quantidade_Total_Doada (kg)' DESC;
+
+
+SELECT
+I.nome AS Instituicao,
+    SUM(D.quantidade_doada) AS 'Total_Doado (kg)'
+FROM
+    Doacao D
+JOIN
+    Instituicao I ON D.idInstituicao = I.idInstituicao
+GROUP BY
+    I.nome -- Agrupa os resultados por nome da instituição
+ORDER BY
+    'Total_Doado (kg)' DESC;
+
+
+SELECT
+    C.localizacao AS Canteiro,
+    E.nome_popular AS Planta_Cultivada,
+    CU.data_plantio AS Data_Plantio
+FROM
+    Cultivo CU
+JOIN
+    Canteiro C ON CU.idCanteiro = C.idCanteiro
+JOIN
+    Especie_De_Planta E ON CU.idEspecie = E.idEspecie
+LEFT JOIN
+    Colheita CO ON CU.idCultivo = CO.idCultivo
+
+
+SELECT
+V.nome AS Voluntario,
+    COUNT(CU.idCultivo) AS Total_de_Cultivos_Realizados
+FROM
+    Voluntario V
+JOIN
+    Cultivo CU ON V.idVoluntario = CU.idVoluntario
+GROUP BY
+    V.idVoluntario, V.nome -- Agrupa pelo ID e nome do voluntário
+ORDER BY
+    Total_de_Cultivos_Realizados DESC
+
+
+SELECT
+E.nome_popular AS Especie_Plantada,
+    C.localizacao AS Canteiro,
+    V.nome AS Voluntario_Responsavel,
+    CU.data_plantio AS Data_Plantio
+FROM
+    Cultivo CU
+JOIN
+    Especie_De_Planta E ON CU.idEspecie = E.idEspecie
+JOIN
+    Canteiro C ON CU.idCanteiro = C.idCanteiro
+JOIN
+    Voluntario V ON CU.idVoluntario = V.idVoluntario
+LEFT JOIN
+    Colheita CO ON CU.idCultivo = CO.idCultivo -- Tenta encontrar uma colheita para o cultivo
+WHERE
+    CO.idColheita IS NULL -- Chave do LEFT JOIN: Filtra onde a colheita não foi encontrada
+    AND CU.status = 'Em crescimento';
+
+
+SELECT
+ca.identificacao AS 'Canteiro',
+  ep.nome_popular AS 'Espécie de Planta',
+  cu.data_plantio AS 'Data do Plantio'
+FROM Cultivo cu
+INNER JOIN Canteiro ca ON cu.idCanteiro = ca.idCanteiro
+INNER JOIN Especie_De_Planta ep ON cu.idEspecie = ep.idEspecie
+ORDER BY ca.identificacao, cu.data_plantio;
